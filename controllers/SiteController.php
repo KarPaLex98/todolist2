@@ -71,11 +71,11 @@ class SiteController extends Controller
     public function actionLogin_vk(){
         $model_login_vk = new Login_vk();
 
-        if(!$_GET['code']) {
+        if(!Yii::$app->request->get('code')) {
 //            Отправляем запрос на авторизацию
             return $this->redirect('https://oauth.vk.com/authorize?client_id=7021425&display=page&redirect_uri=http://todo2/site/login_vk&scope=email,offline&response_type=code&v=5.95');
         }
-        elseif($_GET['code']) {
+        elseif(Yii::$app->request->get('code')) {
 //            Получаем access_token и парсим из него данные
             $access_token = $model_login_vk->getAccessToken($_GET['code']);
             $ob = json_decode($access_token);
@@ -115,15 +115,13 @@ class SiteController extends Controller
         if (!Yii::$app->user->isGuest) {
             $todo_list = Todo::getAll();
             $model_todo = new Todo();
-
-            if ($_POST['Create']) {
+            if (Yii::$app->request->post('Create')){
                 $model_todo->title = $_POST['Todo']['title'];
                 $model_todo->description = $_POST['Todo']['description'];
                 $model_todo->id_user = Yii::$app->user->getId();
                 $model_todo->is_completed = false;
                 $model_todo->is_Send = false;
                 $model_todo->date_time = $_POST['Todo']['date_time'];
-                //$model_todo10->date_time = $_POST['Todo']['date_time'];
                 if ($model_todo->validate() && $model_todo->save()) {
                     return $this->redirect(['site/todo']);
                 }
@@ -153,7 +151,7 @@ class SiteController extends Controller
     public function actionEdit($id){
         $model_edit = Todo::getOne($id);
 
-        if ($_POST['Edit'])
+        if (Yii::$app->request->post('Edit'))
         {
             $model_edit->title = $_POST['Todo']['title'];
             $model_edit->description = $_POST['Todo']['description'];
