@@ -49,7 +49,7 @@ class Login_vk extends Model
     public function getAccessToken($code){
 //        Отправляем запрос на получение access_token с помощью cURL, чтобы результат не выводить на экран
         $cu = curl_init();
-        $url_for_access_token = 'https://oauth.vk.com/access_token?client_id=7021425&client_secret=mAjolwdbKyq28GnGHchU&redirect_uri=http://todo2/site/login_vk&code='.$code;
+        $url_for_access_token = 'https://oauth.vk.com/access_token?client_id=7023487&client_secret=n7dB3FKIsXduzQgr634e&redirect_uri=http:https://stark-peak-44492.herokuapp.com/site/login_vk&code='.$code;
         curl_setopt($cu,CURLOPT_URL, $url_for_access_token);
         curl_setopt($cu,CURLOPT_RETURNTRANSFER,TRUE);
         $access_token = curl_exec($cu);
