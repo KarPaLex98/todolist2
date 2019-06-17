@@ -73,7 +73,7 @@ class SiteController extends Controller
 
         if(!Yii::$app->request->get('code')) {
 //            Отправляем запрос на авторизацию
-            return $this->redirect('https://oauth.vk.com/authorize?client_id=7023487&display=page&redirect_uri=https://stark-peak-44492.herokuapp.com/site/login_vk&scope=email,offline&response_type=code&v=5.95');
+            return $this->redirect('https://oauth.vk.com/authorize?client_id=7023487&display=page&redirect_uri=http://'.Yii::$app->getRequest()->serverName.'/site/login_vk&scope=email,offline&response_type=code&v=5.95');
         }
         elseif(Yii::$app->request->get('code')) {
 //            Получаем access_token и парсим из него данные
