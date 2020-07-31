@@ -72,7 +72,7 @@ class Todo extends \yii\db\ActiveRecord
                             ->setTextBody($msg)
                             ->setHtmlBody($msg_html)
                             ->send();
-                    sleep(20);
+//                    sleep(20);
                 }
             }
         }

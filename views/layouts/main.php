@@ -44,6 +44,7 @@ AppAsset::register($this);
             ['label' => 'Login with VK', 'url' => ['/site/login_vk']]
         ] : [
             ['label' => 'ToDoList', 'url' => ['/site/todo']],
+            ['label' => 'Friends online', 'url' => ['/site/friends']],
             '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(

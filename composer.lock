@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3889e83e8c8a20d53074c327d540ac8e",
+    "content-hash": "1cf8d3c8cad56728c3a18794798f7ef1",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -86,7 +86,7 @@
             "version": "2.0.7.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:yiisoft/jquery-pjax.git",
+                "url": "https://github.com/yiisoft/jquery-pjax.git",
                 "reference": "aef7b953107264f00234902a3880eb50dafc48be"
             },
             "dist": {
@@ -161,6 +161,46 @@
                 "markdown-extra"
             ],
             "time": "2018-03-26T11:24:36+00:00"
+        },
+        {
+            "name": "creocoder/yii2-nested-sets",
+            "version": "0.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/creocoder/yii2-nested-sets.git",
+                "reference": "cb8635a459b6246e5a144f096b992dcc30cf9954"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/creocoder/yii2-nested-sets/zipball/cb8635a459b6246e5a144f096b992dcc30cf9954",
+                "reference": "cb8635a459b6246e5a144f096b992dcc30cf9954",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "creocoder\\nestedsets\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Kochetov",
+                    "email": "creocoder@gmail.com"
+                }
+            ],
+            "description": "The nested sets behavior for the Yii framework",
+            "keywords": [
+                "nested sets",
+                "yii2"
+            ],
+            "time": "2015-01-27T10:53:51+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -431,6 +471,63 @@
                 "yii2"
             ],
             "time": "2019-05-29T12:28:51+00:00"
+        },
+        {
+            "name": "mirocow/yii2-eav",
+            "version": "v0.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Mirocow/yii2-eav.git",
+                "reference": "e4c231cdf7afa5ef21e5fbfececd88ba83b072b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Mirocow/yii2-eav/zipball/e4c231cdf7afa5ef21e5fbfececd88ba83b072b9",
+                "reference": "e4c231cdf7afa5ef21e5fbfececd88ba83b072b9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0",
+                "yiisoft/yii2": ">=2.0.5"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "mirocow\\eav\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexey Samoylov",
+                    "email": "alexey.samoylov@gmail.com",
+                    "homepage": "http://yiiblog.ru",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Mirocow",
+                    "email": "mr.mirocow@gmail.com",
+                    "homepage": "http://mirocow.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Alien-art",
+                    "email": "alien@alien-art.ru",
+                    "role": "Developer"
+                }
+            ],
+            "description": "EAV for Yii2",
+            "keywords": [
+                "attribute",
+                "cck",
+                "eav",
+                "fields",
+                "yii2"
+            ],
+            "time": "2017-01-07T19:07:59+00:00"
         },
         {
             "name": "phpspec/php-diff",
@@ -766,6 +863,45 @@
                 "shim"
             ],
             "time": "2019-02-06T07:57:58+00:00"
+        },
+        {
+            "name": "vkcom/vk-php-sdk",
+            "version": "5.101.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/VKCOM/vk-php-sdk.git",
+                "reference": "46a8f76503050c0c6730359fc234a4d6448b8653"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/VKCOM/vk-php-sdk/zipball/46a8f76503050c0c6730359fc234a4d6448b8653",
+                "reference": "46a8f76503050c0c6730359fc234a4d6448b8653",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6",
+                "vkcom/vk-api-schema": "^5.80.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "VK\\": "src/VK"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "VK PHP SDK",
+            "homepage": "https://github.com/VKCOM/vk-php-sdk",
+            "keywords": [
+                "sdk",
+                "vk"
+            ],
+            "time": "2019-08-16T12:13:20+00:00"
         },
         {
             "name": "yiisoft/yii2",
@@ -1293,6 +1429,7 @@
                 "functional testing",
                 "unit testing"
             ],
+            "abandoned": true,
             "time": "2018-02-26T23:42:52+00:00"
         },
         {

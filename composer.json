@@ -22,7 +22,10 @@
         "yiisoft/yii2-gii": "~2.1.0",
         "ext-json": "*",
         "ext-curl": "*",
-        "kartik-v/yii2-widget-datetimepicker": "^1.4"
+        "kartik-v/yii2-widget-datetimepicker": "^1.4",
+        "vkcom/vk-php-sdk": "^5.101",
+        "creocoder/yii2-nested-sets": "^0.9.0",
+        "mirocow/yii2-eav": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
