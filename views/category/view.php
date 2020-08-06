@@ -34,7 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'lft',
             'rgt',
             'depth',
-            'position',
             'created_at',
             'updated_at',
         ],

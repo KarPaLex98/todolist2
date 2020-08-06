@@ -25,7 +25,8 @@
         "kartik-v/yii2-widget-datetimepicker": "^1.4",
         "vkcom/vk-php-sdk": "^5.101",
         "creocoder/yii2-nested-sets": "^0.9.0",
-        "mirocow/yii2-eav": "*"
+        "klisl/yii2-nested-sets-drag-and-drop": "^1.3",
+        "unclead/yii2-multiple-input": "~2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

@@ -18,7 +18,7 @@ class CategorySearch extends Category
     public function rules()
     {
         return [
-            [['id', 'tree', 'lft', 'rgt', 'depth', 'position', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'tree', 'lft', 'rgt', 'depth', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'safe'],
         ];
     }
@@ -45,7 +45,11 @@ class CategorySearch extends Category
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-        ]);
+            'sort' => [
+                'defaultOrder' => [
+                    'lft' => SORT_ASC,
+                ],
+        ]]);
 
         $this->load($params);
 
@@ -60,7 +64,6 @@ class CategorySearch extends Category
             'lft' => $this->lft,
             'rgt' => $this->rgt,
             'depth' => $this->depth,
-            'position' => $this->position,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);

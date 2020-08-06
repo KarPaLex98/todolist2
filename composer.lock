@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cf8d3c8cad56728c3a18794798f7ef1",
+    "content-hash": "065043c5937e7f53d4ccbf7a01f59234",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -32,7 +32,7 @@
             "version": "3.3.11",
             "source": {
                 "type": "git",
-                "url": "https://github.com/RobinHerbots/Inputmask.git",
+                "url": "git@github.com:RobinHerbots/Inputmask.git",
                 "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
             },
             "dist": {
@@ -473,61 +473,41 @@
             "time": "2019-05-29T12:28:51+00:00"
         },
         {
-            "name": "mirocow/yii2-eav",
-            "version": "v0.7.2",
+            "name": "klisl/yii2-nested-sets-drag-and-drop",
+            "version": "1.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Mirocow/yii2-eav.git",
-                "reference": "e4c231cdf7afa5ef21e5fbfececd88ba83b072b9"
+                "url": "https://github.com/klisl/yii2-nested-sets-drag-and-drop.git",
+                "reference": "ca9706b519506184ec9603c62eb5232a2786d046"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mirocow/yii2-eav/zipball/e4c231cdf7afa5ef21e5fbfececd88ba83b072b9",
-                "reference": "e4c231cdf7afa5ef21e5fbfececd88ba83b072b9",
+                "url": "https://api.github.com/repos/klisl/yii2-nested-sets-drag-and-drop/zipball/ca9706b519506184ec9603c62eb5232a2786d046",
+                "reference": "ca9706b519506184ec9603c62eb5232a2786d046",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5.0",
-                "yiisoft/yii2": ">=2.0.5"
+                "creocoder/yii2-nested-sets": "*",
+                "kartik-v/yii2-krajee-base": "*",
+                "yiisoft/yii2": "~2.0.0"
             },
             "type": "yii2-extension",
             "autoload": {
                 "psr-4": {
-                    "mirocow\\eav\\": "./src"
+                    "klisl\\nestable\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "authors": [
-                {
-                    "name": "Alexey Samoylov",
-                    "email": "alexey.samoylov@gmail.com",
-                    "homepage": "http://yiiblog.ru",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Mirocow",
-                    "email": "mr.mirocow@gmail.com",
-                    "homepage": "http://mirocow.com",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Alien-art",
-                    "email": "alien@alien-art.ru",
-                    "role": "Developer"
-                }
-            ],
-            "description": "EAV for Yii2",
+            "description": "Package",
             "keywords": [
-                "attribute",
-                "cck",
-                "eav",
-                "fields",
+                "drag-and-drop",
+                "nested-sets",
                 "yii2"
             ],
-            "time": "2017-01-07T19:07:59+00:00"
+            "time": "2018-04-03T13:24:34+00:00"
         },
         {
             "name": "phpspec/php-diff",
@@ -863,6 +843,55 @@
                 "shim"
             ],
             "time": "2019-02-06T07:57:58+00:00"
+        },
+        {
+            "name": "unclead/yii2-multiple-input",
+            "version": "2.22.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/unclead/yii2-multiple-input.git",
+                "reference": "cc89d57b083ae82fec3f4dc547e6c936fa1719bd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/unclead/yii2-multiple-input/zipball/cc89d57b083ae82fec3f4dc547e6c936fa1719bd",
+                "reference": "cc89d57b083ae82fec3f4dc547e6c936fa1719bd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "yiisoft/yii2": ">=2.0.13"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "5.7.*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "unclead\\multipleinput\\examples\\": "examples/",
+                    "unclead\\multipleinput\\": "src/",
+                    "unclead\\multipleinput\\tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Eugene Tupikov",
+                    "email": "unclead.nsk@gmail.com"
+                }
+            ],
+            "description": "Widget for handle multiple inputs for an attribute of Yii2 framework model",
+            "keywords": [
+                "yii2",
+                "yii2 array input",
+                "yii2 multiple field",
+                "yii2 multiple input",
+                "yii2 tabular input"
+            ],
+            "time": "2019-12-14T10:41:23+00:00"
         },
         {
             "name": "vkcom/vk-php-sdk",

@@ -14,7 +14,6 @@ use creocoder\nestedsets\NestedSetsBehavior;
  * @property integer $lft
  * @property integer $rgt
  * @property integer $depth
- * @property integer $position
  * @property integer $created_at
  * @property integer $updated_at
  */
@@ -60,8 +59,7 @@ class Category extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['position'], 'default', 'value' => 0],
-            [['tree', 'lft', 'rgt', 'depth', 'position', 'created_at', 'updated_at'], 'integer'],
+            [['tree', 'lft', 'rgt', 'depth', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 255],
         ];
     }
@@ -78,7 +76,6 @@ class Category extends \yii\db\ActiveRecord
             'lft'        => Yii::t('app', 'Lft'),
             'rgt'        => Yii::t('app', 'Rgt'),
             'depth'      => Yii::t('app', 'Depth'),
-            'position'   => Yii::t('app', 'Position'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
@@ -122,7 +119,7 @@ class Category extends \yii\db\ActiveRecord
         $rows = self::find()->
             select('id, name, depth')->
             where(['NOT IN', 'id', $children])->
-            orderBy('tree, lft, position')->
+            orderBy('tree, lft')->
             all();
 
         $return = [];
