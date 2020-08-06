@@ -55,7 +55,17 @@ class ShopAttribute extends \yii\db\ActiveRecord
 
     public static function getModelsAttributes()
     {
-        return self::find()->indexBy('id')->all();
+        $attributes_full = self::find()->indexBy('id')->all();
+        $attributes = [];
+        foreach ($attributes_full as $attribute){
+            // #TODO изменить способ формирования массива с атрибутами
+
+//            echo '<pre>';
+//            var_dump($attribute->id);
+//            echo '</pre>';
+            $attributes = array_merge($attributes, [$attribute->id => $attribute->title]);
+        }
+        return $attributes;
     }
 
     /**

@@ -70,15 +70,19 @@ class ProductController extends Controller
         $model_product = new Product();
 
         if ($model_product->load(Yii::$app->request->post()) && $model_product->save()) {
+
             return $this->redirect(['view', 'id' => $model_product->id]);
         }
 
         $model_value = new ShopAttributeValue();
         $attributes = ShopAttribute::getModelsAttributes();
+//
+//        echo '<pre>';
+//        var_dump($attributes);
+//        echo '</pre>';
 
         return $this->render('create', [
             'model_product' => $model_product,
-            'model_value' => $model_value,
             'attributes' => $attributes,
         ]);
     }

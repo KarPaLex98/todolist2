@@ -4,7 +4,6 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model_product app\models\Product */
-/* @var $model_value app\models\ShopAttributeValue */
 /* @var $attributes */
 
 $this->title = 'Create Product';
@@ -17,6 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model_product' => $model_product,
+        'attributes' => $attributes,
     ]) ?>
 
 </div>
