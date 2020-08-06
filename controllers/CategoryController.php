@@ -143,7 +143,7 @@ class CategoryController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($category_id = 0)
     {
         $model = new Category();
 
@@ -163,6 +163,7 @@ class CategoryController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'category_id' => $category_id,
         ]);
     }
 

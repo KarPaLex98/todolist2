@@ -8,6 +8,7 @@ use app\models\Category;
 /* @var $this yii\web\View */
 /* @var $model app\models\Category */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $category_id  */
 ?>
 
 <div class="category-form">
@@ -17,12 +18,13 @@ use app\models\Category;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <div class='form-group field-attribute-parentId'>
-    <?= Html::label('Parent', 'parent', ['class' => 'control-label']);?>
+    <?= Html::label('Parent', 'parent', ['class' => 'control-label']) ?>
     <?= Html::dropdownList(
         'Category[parentId]',
         $model->parentId,
         Category::getTree($model->id),
-        ['prompt' => 'No Parent (saved as root)', 'class' => 'form-control']
+        ['prompt' => 'No Parent (saved as root)', 'class' => 'form-control',
+            'options' =>[ $category_id => ['Selected' => true]]]
     );?>
 
     </div>
