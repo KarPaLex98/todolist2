@@ -13,13 +13,18 @@ use app\models\Category;
 /* @var $breadcrumbs */
 
 $this->title = Yii::t('app', 'Categories');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Categories'), 'url' => ['index']];
-if ($breadcrumbs){
-    foreach ($breadcrumbs as $breadcrumb){
-        $this->params['breadcrumbs'][] = ['label' => Yii::t('app', $breadcrumb[0]), 'url' => ['category/childrens/' . $breadcrumb[1]]];
+
+if ($breadcrumbs) {
+    $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Categories'), 'url' => ['index']];
+    $end_element = array_pop($breadcrumbs);
+    foreach ($breadcrumbs as $breadcrumb) {
+        $this->params['breadcrumbs'][] = ['label' => Yii::t('app', $breadcrumb->name), 'url' => ['category/childrens/' . $breadcrumb->id]];
     }
+    $this->params['breadcrumbs'][] = $end_element->name;
+} else {
+    $this->params['breadcrumbs'][] = 'Categories';
 }
-//$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="category-index">
 
@@ -43,8 +48,7 @@ if ($breadcrumbs){
                 'label' => 'Name',
                 'filter' => Category::find()->roots()->select('name, id, lft')->indexBy('lft')->column(),
                 'value' => function ($model) {
-                    $children = $model->children()->all();
-                    if (count($children) != 0) {
+                    if (($model->rgt - $model->lft) !== 1) {
                         return Html::a(Html::encode($model->name), Url::to(['childrens', 'id' => $model->id]));
                     }
                     return $model->name;
@@ -65,22 +69,21 @@ if ($breadcrumbs){
 //            'parent.name',
             // 'lft',
             // 'rgt',
-             'depth',
+            'depth',
 //            'position',
             // 'created_at',
             // 'updated_at',
 
             [
-                    'class' => 'yii\grid\ActionColumn',
+                'class' => 'yii\grid\ActionColumn',
                 'template' => '{view} {update} {delete} {up} {down}',
                 'buttons' => [
                     'up' => function ($url, $model, $key) {
                         $iconName = "arrow-up";
 
-                        //Текст в title ссылки, что виден при наведении
                         $title = \Yii::t('yii', 'Info');
 
-                        $id = 'info-'.$key;
+                        $id = 'info-' . $key;
                         $options = [
                             'title' => $title,
                             'aria-label' => $title,
@@ -88,7 +91,7 @@ if ($breadcrumbs){
                             'id' => $id
                         ];
 
-                        $url = Url::to(['up', 'id' => $model->id]);
+                        $url = Url::to(['up-down', 'id' => $model->id, 'param' => 0]);
 
                         //Для стилизации используем библиотеку иконок
                         $icon = Html::tag('span', '', ['class' => "glyphicon glyphicon-$iconName"]);
@@ -101,7 +104,7 @@ if ($breadcrumbs){
                         //Текст в title ссылки, что виден при наведении
                         $title = \Yii::t('yii', 'Info');
 
-                        $id = 'info-'.$key;
+                        $id = 'info-' . $key;
                         $options = [
                             'title' => $title,
                             'aria-label' => $title,
@@ -109,7 +112,7 @@ if ($breadcrumbs){
                             'id' => $id
                         ];
 
-                        $url = Url::to(['down', 'id' => $model->id]);
+                        $url = Url::to(['up-down', 'id' => $model->id, 'param' => 1]);
 
                         //Для стилизации используем библиотеку иконок
                         $icon = Html::tag('span', '', ['class' => "glyphicon glyphicon-$iconName"]);

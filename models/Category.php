@@ -27,7 +27,8 @@ class Category extends \yii\db\ActiveRecord
         return 'category';
     }
 
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             \yii\behaviors\TimeStampBehavior::className(),
             'tree' => [
@@ -70,12 +71,12 @@ class Category extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'         => Yii::t('app', 'ID'),
-            'name'       => Yii::t('app', 'Name'),
-            'tree'       => Yii::t('app', 'Tree'),
-            'lft'        => Yii::t('app', 'Lft'),
-            'rgt'        => Yii::t('app', 'Rgt'),
-            'depth'      => Yii::t('app', 'Depth'),
+            'id' => Yii::t('app', 'ID'),
+            'name' => Yii::t('app', 'Name'),
+            'tree' => Yii::t('app', 'Tree'),
+            'lft' => Yii::t('app', 'Lft'),
+            'rgt' => Yii::t('app', 'Rgt'),
+            'depth' => Yii::t('app', 'Depth'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
@@ -83,7 +84,7 @@ class Category extends \yii\db\ActiveRecord
 
     /**
      * Get parent's ID
-     * @return \yii\db\ActiveQuery 
+     * @return \yii\db\ActiveQuery
      */
     public function getParentId()
     {
@@ -93,7 +94,7 @@ class Category extends \yii\db\ActiveRecord
 
     /**
      * Get parent's node
-     * @return \yii\db\ActiveQuery 
+     * @return \yii\db\ActiveQuery
      */
     public function getParent()
     {
@@ -102,7 +103,7 @@ class Category extends \yii\db\ActiveRecord
 
     /**
      * Get a full tree as a list, except the node and its children
-     * @param  integer $node_id node's ID
+     * @param integer $node_id node's ID
      * @return array array of node
      */
     public static function getTree($node_id = 0)
@@ -110,22 +111,64 @@ class Category extends \yii\db\ActiveRecord
         // don't include children and the node
         $children = [];
 
-        if ( ! empty($node_id))
+        if (!empty($node_id))
             $children = array_merge(
                 self::findOne($node_id)->children()->column(),
                 [$node_id]
-                );
+            );
 
         $rows = self::find()->
-            select('id, name, depth')->
-            where(['NOT IN', 'id', $children])->
-            orderBy('tree, lft')->
-            all();
+        select('id, name, depth')->
+        where(['NOT IN', 'id', $children])->
+        orderBy('tree, lft')->
+        all();
 
         $return = [];
         foreach ($rows as $row)
             $return[$row->id] = str_repeat('-', $row->depth) . ' ' . $row->name;
 
         return $return;
+    }
+
+    public function getLeftNeighbor()
+    {
+        // Если узел корневой
+        if (is_null($parent = $this->getParent())) {
+            return self::find()
+                ->andWhere(['<', 'tree', $this->tree])
+                ->andWhere(['=', 'depth', 0])
+                ->orderBy(['tree' => SORT_DESC])
+                ->one();
+        }
+        //Обычный узел
+        return self::find()
+            ->andWhere(['=', 'tree', $parent->tree])
+            ->andWhere(['=', 'depth', $parent->depth + 1])
+            ->andWhere(['>', 'lft', $parent->lft])
+            ->andWhere(['<', 'rgt', $parent->rgt])
+            ->andWhere(['<', 'lft', $this->lft])
+            ->orderBy(['lft' => SORT_DESC])
+            ->one();
+    }
+
+    public function getRightNeighbor()
+    {
+        // Если узел корневой
+        if (is_null($parent = $this->getParent())) {
+            return self::find()
+                ->andWhere(['>', 'tree', $this->tree])
+                ->andWhere(['=', 'depth', 0])
+                ->orderBy(['tree' => SORT_ASC])
+                ->one();
+        }
+        //Обычный узел
+        return self::find()
+            ->andWhere(['=', 'tree', $parent->tree])
+            ->andWhere(['=', 'depth', $parent->depth + 1])
+            ->andWhere(['>', 'lft', $parent->lft])
+            ->andWhere(['<', 'rgt', $parent->rgt])
+            ->andWhere(['>', 'rgt', $this->rgt])
+            ->orderBy(['rgt' => SORT_ASC])
+            ->one();
     }
 }

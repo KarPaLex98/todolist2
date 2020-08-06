@@ -62,125 +62,69 @@ class CategoryController extends Controller
      * Displays childrens.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
 
     public function actionChildrens($id)
     {
-        $searchModel = new CategorySearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $parent = Category::findOne($id);
-        $breadcrumbs = $parent
-            ->parents()
-            ->all();
-        array_push($all_parents, $parent);
-        $breadcrumbs = [];
-        $breadcrumbs[] = $parent;
-        foreach ($all_parents as $node) {
-            array_push($breadcrumbs, [$node->name, $node->id]);
+
+        if (!is_null($parent)) {
+            $searchModel = new CategorySearch();
+            $dataProvider = $searchModel->search_in_one_depth(Yii::$app->request->queryParams, $parent);
+
+            $breadcrumbs = $parent
+                ->parents()
+                ->all();
+            $breadcrumbs[] = $parent;
+
+            return $this->render('index', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'breadcrumbs' => $breadcrumbs,
+            ]);
+        }else{
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $dataProvider->query
-            ->andWhere(['=', 'depth', $parent->depth + 1])
-            ->andWhere(['>', 'lft', $parent->lft])
-            ->andWhere(['<', 'rgt', $parent->rgt])
-            ->andWhere(['=', 'tree', $parent->tree]);
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'breadcrumbs' => $breadcrumbs,
-        ]);
     }
 
     /**
-     * Move node up.
-     * @param integer $id
+     * Move node up/down.
+     * @param int $id
+     * @param int $param
      * @return mixed
      */
 
-    public function actionUp($id)
+    public function actionUpDown($id, $param=0)
     {
-        $searchModel = new CategorySearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $current_node = Category::findOne($id);
+
+        $neighbor = ($param == 0) ? $current_node->getLeftNeighbor() : $current_node->getRightNeighbor();
+
         // Если узел корневой
         if (is_null($current_node->getParentId())) {
-            $neighbor = Category::find()
-                ->andWhere(['<', 'tree', $current_node->tree])
-                ->andWhere(['=', 'depth', 0])
-                ->orderBy(['tree' => SORT_DESC])
-                ->one();
+
             if (is_null($neighbor)) {
                 return $this->redirect(['index']);
             }
-//            $tree_n = Category::find()->andWhere(['=', 'tree', $neighbor->tree])->all();
-//            $tree_c = Category::find()->andWhere(['=', 'tree', $current_node->tree])->all();
-//            foreach ($tree_n as $elem) {
-//                $elem->tree = $current_node->tree;
-//                $elem->save();
-//            }
-            Category::updateAll(
-                ['tree' => $neighbor->tree],
-                ['tree' => $current_node->tree],
-            );
+
+            // Swap tree's indices
+            Category::updateAll(['tree' => -1], ['=', 'tree', $current_node->tree]);
+            Category::updateAll(['tree' => $current_node->tree], ['=', 'tree', $neighbor->tree]);
+            Category::updateAll(['tree' => $neighbor->tree], ['=', 'tree', -1]);
+
             return $this->redirect(['index']);
         }
         //Обычный узел
-        $neighbors = $current_node->getParent()->children(1)->all();
-        if (count($neighbors) != 0) {
-            foreach ($neighbors as $neighbor) {
-                if ($current_node->lft - 1 == $neighbor->rgt) {
-                    $current_node->insertBefore($neighbor);
-                    break;
-                }
+        if (!is_null($neighbor)) {
+            if ($param == 0) {
+                $current_node->insertBefore($neighbor);
+            }else{
+                $neighbor->insertBefore($current_node);
             }
         }
         return $this->redirect(['childrens', 'id' => $current_node->getParentId()]);
     }
-
-    /**
-     * Move node down.
-     * @param integer $id
-     * @return mixed
-     */
-
-    public function actionDown($id)
-    {
-        $searchModel = new CategorySearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $current_node = Category::findOne($id);
-        // Если узел корневой
-        if (is_null($current_node->getParentId())) {
-            $neighbor = Category::find()->andWhere(['>', 'tree', $current_node->tree])
-                ->andWhere(['=', 'depth', 0])
-                ->orderBy(['tree' => SORT_ASC])
-                ->one();
-            if (is_null($neighbor)) {
-                return $this->redirect(['index']);
-            }
-            $tree_n = Category::find()->andWhere(['=', 'tree', $neighbor->tree])->all();
-            $tree_c = Category::find()->andWhere(['=', 'tree', $current_node->tree])->all();
-            foreach ($tree_n as $elem) {
-                $elem->tree = $current_node->tree;
-                $elem->save();
-            }
-            foreach ($tree_c as $elem) {
-                $elem->tree = $neighbor->tree;
-                $elem->save();
-            }
-            return $this->redirect(['index']);
-        }
-        //Обычный узел
-        $neighbors = $current_node->getParent()->children(1)->all();
-        if (count($neighbors) != 0) {
-            foreach ($neighbors as $neighbor) {
-                if ($current_node->rgt + 1 == $neighbor->lft) {
-                    $neighbor->insertBefore($current_node);
-                    break;
-                }
-            }
-        }
-        return $this->redirect(['childrens', 'id' => $current_node->getParentId()]);
-    }
-
 
     /**
      * Displays a single Category model.
