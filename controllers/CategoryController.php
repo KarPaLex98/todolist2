@@ -145,7 +145,9 @@ class CategoryController extends Controller
      */
     public function actionCreate($category_id = 0)
     {
-        $model = new Category();
+        $model = new Category([
+            '' => $category_id
+        ]);
 
         if (!empty($post = Yii::$app->request->post('Category'))) {
             $model->name = $post['name'];
@@ -188,12 +190,9 @@ class CategoryController extends Controller
                     if (!$model->isRoot()) {
                         $model->makeRoot();
                     }
-                } else // move node to other root
-                {
-                    if ($model->id != $parent_id) {
-                        $parent = Category::findOne($parent_id);
-                        $model->appendTo($parent);
-                    }
+                } else if ($model->id != $parent_id) {
+                    $parent = Category::findOne($parent_id);
+                    $model->appendTo($parent);
                 }
 
                 return $this->redirect(['view', 'id' => $model->id]);

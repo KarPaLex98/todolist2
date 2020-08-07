@@ -24,7 +24,8 @@ use app\models\Category;
         $model->parentId,
         Category::getTree($model->id),
         ['prompt' => 'No Parent (saved as root)', 'class' => 'form-control',
-            'options' =>[ $category_id => ['Selected' => true]]]
+            'options' =>[ $category_id => ['Selected' => true]]
+        ]
     );?>
 
     </div>

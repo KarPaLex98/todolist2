@@ -3,11 +3,14 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Product */
+/* @var $model_product app\models\Product */
+/* @var $attributes */
+/* @var $attributes_values array */
 
-$this->title = 'Update Product: ' . $model->name;
+
+$this->title = 'Update Product: ' . $model_product->name;
 $this->params['breadcrumbs'][] = ['label' => 'Products', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model_product->name, 'url' => ['view', 'id' => $model_product->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="product-update">
@@ -15,7 +18,9 @@ $this->params['breadcrumbs'][] = 'Update';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'model_product' => $model_product,
+        'attributes' => $attributes,
+        'attributes_values' => $attributes_values,
     ]) ?>
 
 </div>

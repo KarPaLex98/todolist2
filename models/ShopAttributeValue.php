@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\data\ActiveDataProvider;
+use yii\helpers\VarDumper;
 
 /**
  * This is the model class for table "{{%shop_attribute_value}}".
@@ -48,6 +50,19 @@ class ShopAttributeValue extends \yii\db\ActiveRecord
             'attribute_id' => 'Attribute ID',
             'value' => 'Value',
         ];
+    }
+
+    public static function getDP_ValuesByProductId($id)
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => self::find()->andWhere(['=', 'product_id', $id]),
+        ]);
+        return $dataProvider;
+    }
+
+    public static function get_ValuesByProductId($id)
+    {
+        return self::find()->andWhere(['=', 'product_id', $id])->all();
     }
 
     /**

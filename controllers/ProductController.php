@@ -2,12 +2,14 @@
 
 namespace app\controllers;
 
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Yii;
 use app\models\Product;
 use app\models\ShopAttributeValue;
 use app\models\ShopAttribute;
 
 use yii\data\ActiveDataProvider;
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -56,7 +58,8 @@ class ProductController extends Controller
     public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'product_model' => $this->findModel($id),
+            'value_dataProvider' => ShopAttributeValue::getDP_ValuesByProductId($id),
         ]);
     }
 
@@ -69,21 +72,29 @@ class ProductController extends Controller
     {
         $model_product = new Product();
 
-        if ($model_product->load(Yii::$app->request->post()) && $model_product->save()) {
-
+        if (!empty($post = Yii::$app->request->post('Product'))) {
+            $model_product->name = $post['name'];
+            $model_product->description = $post['description'];
+            $model_product->save();
+            $product_id = Yii::$app->db->getLastInsertID();
+            $attributes_values = $post['attributes_values'];
+            foreach ($attributes_values as $elem) {
+                $model_value = new ShopAttributeValue();
+                $model_value->product_id = $product_id;
+                $model_value->attribute_id = $elem['attribute'];
+                $model_value->value = $elem['value'];
+                $model_value->save();
+            }
             return $this->redirect(['view', 'id' => $model_product->id]);
         }
 
         $model_value = new ShopAttributeValue();
         $attributes = ShopAttribute::getModelsAttributes();
-//
-//        echo '<pre>';
-//        var_dump($attributes);
-//        echo '</pre>';
 
         return $this->render('create', [
             'model_product' => $model_product,
             'attributes' => $attributes,
+            '$attributes_values' => null,
         ]);
     }
 
@@ -94,16 +105,28 @@ class ProductController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $count_val=0)
     {
-        $model = $this->findModel($id);
+        $model_product = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model_product->load(Yii::$app->request->post()) && $model_product->save()) {
+            return $this->redirect(['view', 'id' => $model_product->id]);
         }
 
+        $attributes = ShopAttribute::getModelsAttributes();
+//        VarDumper::dump($attributes, 10, true);
+        $attributes_values = ShopAttributeValue::get_ValuesByProductId($id);
+
+        $cookies = Yii::$app->response->cookies;
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'attributes_values',
+            'value' =>  json_encode($attributes_values),
+        ]));
+
         return $this->render('update', [
-            'model' => $model,
+            'model_product' => $model_product,
+            'attributes' => $attributes,
+            'attributes_values' => $attributes_values,
         ]);
     }
 

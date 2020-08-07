@@ -57,16 +57,16 @@ class ShopAttribute extends \yii\db\ActiveRecord
     {
         $attributes_full = self::find()->indexBy('id')->all();
         $attributes = [];
-        foreach ($attributes_full as $attribute){
-            // #TODO изменить способ формирования массива с атрибутами
-
-//            echo '<pre>';
-//            var_dump($attribute->id);
-//            echo '</pre>';
-            $attributes = array_merge($attributes, [$attribute->id => $attribute->title]);
+        $ids = [];
+        $titles = [];
+        foreach ($attributes_full as $attribute) {
+            $ids[] = $attribute->id;
+            $titles[] = $attribute->title;
         }
+        $attributes = array_combine($ids, $titles);
         return $attributes;
     }
+
 
     /**
      * @return \yii\db\ActiveQuery
