@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Yii;
+use app\httpclient\Client;
 use app\models\Product;
 use app\models\ShopAttributeValue;
 use app\models\ShopAttribute;
@@ -105,22 +106,38 @@ class ProductController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id, $count_val=0)
+    public function actionUpdate($id, $count_val = 0)
     {
         $model_product = $this->findModel($id);
 
-        if ($model_product->load(Yii::$app->request->post()) && $model_product->save()) {
+        if (!empty($post = Yii::$app->request->post('Product'))) {
+            $model_product->name = $post['name'];
+            $model_product->description = $post['description'];
+            $model_product->save();
+            $product_id = $model_product->id;
+            $attributes_values = $post['attributes_values'];
+            foreach ($attributes_values as $elem) {
+                $model_value = new ShopAttributeValue();
+                $model_value->product_id = $product_id;
+                $model_value->attribute_id = $elem['attribute'];
+                $model_value->value = $elem['value'];
+                $model_value->save();
+            }
             return $this->redirect(['view', 'id' => $model_product->id]);
         }
 
+        if (!empty($post = Yii::$app->request->post('id'))) {
+            $attributes_values = ShopAttributeValue::get_ValuesByProductId($post);
+            return json_encode($attributes_values);
+        }
+
         $attributes = ShopAttribute::getModelsAttributes();
-//        VarDumper::dump($attributes, 10, true);
-        $attributes_values = ShopAttributeValue::get_ValuesByProductId($id);
+        $attributes_values = ShopAttributeValue::getDP_ValuesByProductId($id);
 
         $cookies = Yii::$app->response->cookies;
         $cookies->add(new \yii\web\Cookie([
             'name' => 'attributes_values',
-            'value' =>  json_encode($attributes_values),
+            'value' => json_encode($attributes_values),
         ]));
 
         return $this->render('update', [
@@ -128,6 +145,44 @@ class ProductController extends Controller
             'attributes' => $attributes,
             'attributes_values' => $attributes_values,
         ]);
+    }
+
+    /**
+     * Updates an existing ShopAttributeValue model.
+     * If update is successful, the browser will be redirected to the 'update' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdateValue($product_id, $value_id)
+    {
+        $model = ShopAttributeValue::findOne($value_id);
+
+        $product = Product::findOne($product_id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['update', 'id' => $product->id]);
+        }
+
+        return $this->render('shop-attribute-value/update', [
+            'model' => $model,
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+        ]);
+    }
+
+    /**
+     * Deletes an existing ShopAttributeValue model.
+     * If deletion is successful, the browser will be redirected to the 'update' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDeleteValue($product_id, $value_id)
+    {
+        ShopAttributeValue::findOne($value_id)->delete();
+
+        return $this->redirect(['update', 'id' => $product_id]);
     }
 
     /**

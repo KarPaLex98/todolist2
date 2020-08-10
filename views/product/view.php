@@ -1,5 +1,7 @@
 <?php
 
+use app\models\ShopAttribute;
+use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\widgets\ListView;
@@ -38,9 +40,28 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
-    <?= ListView::widget([
+<!--    --><?//= ListView::widget([
+//        'dataProvider' => $value_dataProvider,
+//        'itemView' => '_item_value',
+//    ]) ?>
+
+    <?= GridView::widget([
         'dataProvider' => $value_dataProvider,
-        'itemView' => '_item_value',
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+
+            'id',
+            'product_id',
+            [
+                'attribute' => 'attribute',
+                'label' => 'Attribute',
+//                    'filter' => ShopAttribute::find()->select('title')->indexBy('title')->column(),
+                'value' => function ($model) {
+                    return ShopAttribute::findOne($model->attribute_id)->title;
+                },
+            ],
+            'value',
+        ],
     ]) ?>
 
 </div>

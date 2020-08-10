@@ -21,6 +21,7 @@ $this->params['breadcrumbs'][] = 'Update';
         'model_product' => $model_product,
         'attributes' => $attributes,
         'attributes_values' => $attributes_values,
+        'breadcrumbs' => $this->params['breadcrumbs'],
     ]) ?>
 
 </div>

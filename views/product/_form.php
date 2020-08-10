@@ -1,5 +1,8 @@
 <?php
 
+use app\models\ShopAttribute;
+use yii\grid\GridView;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -11,6 +14,8 @@ use unclead\multipleinput\MultipleInput;
 /* @var $model_value app\models\ShopAttributeValue */
 /* @var $attributes array */
 /* @var $attributes_values array */
+/* @var $breadcrumbs array */
+
 ?>
 
 <div class="product-form">
@@ -25,6 +30,8 @@ use unclead\multipleinput\MultipleInput;
         ?>
         <?= $form->field($model_product, 'attributes_values')->widget(MultipleInput::className(), [
         'max' => count($attributes),
+//        'max' => 10,
+        'min' => 0,
         'allowEmptyList' => false,
         'enableGuessTitle' => true,
         'addButtonPosition' => MultipleInput::POS_HEADER, // show add button in the header
@@ -46,6 +53,8 @@ use unclead\multipleinput\MultipleInput;
     <?php else: ?>
         <?= $form->field($model_product, 'attributes_values')->widget(MultipleInput::className(), [
             'max' => count($attributes),
+//            'max' => 10,
+            'min' => 0,
             'allowEmptyList' => false,
             'enableGuessTitle' => true,
             'addButtonPosition' => MultipleInput::POS_HEADER, // show add button in the header
@@ -66,24 +75,74 @@ use unclead\multipleinput\MultipleInput;
         ])
             ->label(false) ?>
 
-    <?php endif; ?>
+        <?= GridView::widget([
+            'dataProvider' => $attributes_values,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
 
-    <?php $js = <<<JS
-        function getCookie(name) {
-            let matches = document.cookie.match(new RegExp(
-                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
-            return matches ? decodeURIComponent(matches[1]) : undefined;
-        }
-        let attributes_values = JSON.parse(getCookie('attributes_values'));
-        attributes_values.forEach((element) => {
-            
-        })
-    
-        let item_block = jQuery('#multiple-input-list__item');
-        let parent = item_block.parent();
-        item_block = item_block.clone();
-        item_block.find('select').val()
-    JS; ?>
+                'id',
+                'product_id',
+                [
+                    'attribute' => 'attribute',
+                    'label' => 'Attribute',
+                    'filter' => ShopAttribute::find()->select('title, id')->indexBy('title')->column(),
+                    'value' => function ($model) {
+                        return ShopAttribute::findOne($model->attribute_id)->title;
+                    },
+                ],
+                'value',
+
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{update} {delete}',
+                    'buttons' => [
+                        'update' => function ($url, $model, $key) use ($model_product) {
+                            $iconName = "pencil";
+
+                            $title = \Yii::t('yii', 'Info');
+
+                            $id = 'info-' . $key;
+                            $options = [
+                                'title' => $title,
+                                'aria-label' => $title,
+                                'data-pjax' => '0',
+                                'id' => $id
+                            ];
+
+                            $url = Url::to(['update-value', 'product_id' => $model_product->id, 'value_id' => $model->id]);
+
+                            //Для стилизации используем библиотеку иконок
+                            $icon = Html::tag('span', '', ['class' => "glyphicon glyphicon-$iconName"]);
+
+                            return Html::a($icon, $url, $options);
+                        },
+                        'delete' => function ($url, $model, $key) use ($model_product) {
+                            $iconName = "remove-sign";
+
+                            //Текст в title ссылки, что виден при наведении
+                            $title = \Yii::t('yii', 'Info');
+
+                            $id = 'info-' . $key;
+                            $options = [
+                                'title' => $title,
+                                'aria-label' => $title,
+                                'data-pjax' => '0',
+                                'id' => $id
+                            ];
+
+                            $url = Url::to(['delete-value', 'product_id' => $model_product->id, 'value_id' => $model->id]);
+
+                            //Для стилизации используем библиотеку иконок
+                            $icon = Html::tag('span', '', ['class' => "glyphicon glyphicon-$iconName"]);
+
+                            return Html::a($icon, $url, $options);
+                        },
+                    ],
+                ]
+            ],
+        ]) ?>
+
+    <?php endif; ?>
 
 
     <div class="form-group">

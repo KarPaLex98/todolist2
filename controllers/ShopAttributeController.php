@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\ShopAttributeValue;
 use Yii;
 use app\models\ShopAttribute;
 use yii\data\ActiveDataProvider;
@@ -105,6 +106,8 @@ class ShopAttributeController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+
+        ShopAttributeValue::deleteAll('attribute_id = :attribute_id', [':attribute_id' => $id]);
 
         return $this->redirect(['index']);
     }

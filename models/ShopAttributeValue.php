@@ -62,7 +62,11 @@ class ShopAttributeValue extends \yii\db\ActiveRecord
 
     public static function get_ValuesByProductId($id)
     {
-        return self::find()->andWhere(['=', 'product_id', $id])->all();
+        $raw_data = self::find()->andWhere(['=', 'product_id', $id])->all();
+        foreach ($raw_data as $element) {
+            $attributes_values[] = ["attribute" => $element->attribute_id, "value" => $element->value];
+        }
+        return $attributes_values;
     }
 
     /**
