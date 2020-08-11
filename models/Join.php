@@ -32,9 +32,9 @@ class Join extends Model
         $user->setPassword($this->password);
 //        Затем пытаемся отправить письмо с подтверждением на указанный email. Если письмо отправлено, то заносим аккаунт в БД.
         if ($this->send_message($user->email, $user->token)){
-            $auth = Yii::$app->authManager;
-            $authorRole = $auth->getRole('user');
-            $auth->assign($authorRole, $user->getId());
+//            $auth = Yii::$app->authManager;
+//            $authorRole = $auth->getRole('user');
+//            $auth->assign($authorRole, $user->getId());
             return $user->save();
         }
         else return false;

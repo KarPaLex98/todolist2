@@ -40,38 +40,13 @@ class ProductController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index'],
-                        'roles' => ['EAV'],
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'update-value', 'delete-value',],
+                        'roles' => ['admin'],
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['view'],
-                        'roles' => ['EAV'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['create'],
-                        'roles' => ['EAV'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['update'],
-                        'roles' => ['EAV'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['delete'],
-                        'roles' => ['EAV'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['update-value'],
-                        'roles' => ['EAV'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['delete-value'],
-                        'roles' => ['EAV'],
+                        'actions' => ['index', 'view'],
+                        'roles' => ['watchAdminsPages'],
                     ],
                 ],
             ],
@@ -124,13 +99,15 @@ class ProductController extends Controller
             $model_product->description = $post['description'];
             $model_product->save();
             $product_id = Yii::$app->db->getLastInsertID();
-            $attributes_values = $post['attributes_values'];
-            foreach ($attributes_values as $elem) {
-                $model_value = new ShopAttributeValue();
-                $model_value->product_id = $product_id;
-                $model_value->attribute_id = $elem['attribute'];
-                $model_value->value = $elem['value'];
-                $model_value->save();
+            if (isset($post['attributes_values']) && ($post['attributes_values']) !== '') {
+                $attributes_values = $post['attributes_values'];
+                foreach ($attributes_values as $elem) {
+                    $model_value = new ShopAttributeValue();
+                    $model_value->product_id = $product_id;
+                    $model_value->attribute_id = $elem['attribute'];
+                    $model_value->value = $elem['value'];
+                    $model_value->save();
+                }
             }
             return $this->redirect(['view', 'id' => $model_product->id]);
         }
@@ -161,7 +138,7 @@ class ProductController extends Controller
             $model_product->description = $post['description'];
             $model_product->save();
             $product_id = $model_product->id;
-            if (isset($post['attributes_values'])) {
+            if (isset($post['attributes_values']) && ($post['attributes_values']) !== '') {
                 $attributes_values = $post['attributes_values'];
                 foreach ($attributes_values as $elem) {
                     $model_value = new ShopAttributeValue();

@@ -27,38 +27,14 @@ class SiteController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index'],
-                        'roles' => ['toDo'],
+                        'actions' => ['index', 'logout', 'friends', 'groups', 'todo',
+                            'delete', 'completed', 'edit'],
+                        'roles' => ['user'],
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['activation'],
-                        'roles' => ['toDo'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['activation'],
-                        'roles' => ['toDo'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['update'],
-                        'roles' => ['toDo'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['delete'],
-                        'roles' => ['toDo'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['update-value'],
-                        'roles' => ['toDo'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['delete-value'],
-                        'roles' => ['toDo'],
+                        'actions' => ['login', 'join', 'activation', 'login_vk'],
+                        'roles' => ['?'],
                     ],
                 ],
             ],
@@ -142,9 +118,10 @@ class SiteController extends Controller
         return $this->render('friends', ['friends' => $tmp->response]);
     }
 
-    public function actionGroups(){
+    public function actionGroups()
+    {
         $cu = curl_init();
-        $url = 'https://api.vk.com/method/groups.get?user_id='.Yii::$app->request->get('id').'access_token=' . $_SESSION['token'] . '&v=5.95';
+        $url = 'https://api.vk.com/method/groups.get?user_id=' . Yii::$app->request->get('id') . 'access_token=' . $_SESSION['token'] . '&v=5.95';
         echo '<pre>';
         var_dump($url);
         echo '</pre>';

@@ -1,4 +1,5 @@
 <?php
+
 namespace app\commands;
 
 use Yii;
@@ -9,6 +10,8 @@ class RbacController extends Controller
     public function actionInit()
     {
         $auth = Yii::$app->authManager;
+
+        $auth->removeAll();
 
         $nestedSets = $auth->createPermission('nestedSets');
         $nestedSets->description = 'actions with NestedSets';
@@ -26,6 +29,23 @@ class RbacController extends Controller
         $auth->add($user);
         $auth->addChild($user, $toDO);
 
+        $auth = Yii::$app->authManager;
+
+
+        $rule = new \app\rbac\AdvancedUserRule();
+        $auth->add($rule);
+
+
+        $watchAdminsPages = $auth->createPermission('watchAdminsPages');
+        $watchAdminsPages->description = "Watch admin's pages";
+        $watchAdminsPages->ruleName = $rule->name;
+        $auth->add($watchAdminsPages);
+
+        $auth->addChild($toDO, $watchAdminsPages);
+
+        $auth->addChild($user, $watchAdminsPages);
+
+
         $admin = $auth->createRole('admin');
         $auth->add($admin);
         $auth->addChild($admin, $EAV);
@@ -33,6 +53,5 @@ class RbacController extends Controller
         $auth->addChild($admin, $user);
 
         $auth->assign($user, 2);
-//        $auth->assign($admin, 1);
     }
 }
