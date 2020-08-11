@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\ProductSearch;
+use app\models\ShopAttributeValueSearch;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Yii;
 use app\httpclient\Client;
@@ -10,6 +12,7 @@ use app\models\ShopAttributeValue;
 use app\models\ShopAttribute;
 
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -32,6 +35,46 @@ class ProductController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['EAV'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['view'],
+                        'roles' => ['EAV'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['create'],
+                        'roles' => ['EAV'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'roles' => ['EAV'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'roles' => ['EAV'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update-value'],
+                        'roles' => ['EAV'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete-value'],
+                        'roles' => ['EAV'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -41,11 +84,11 @@ class ProductController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Product::find(),
-        ]);
+        $searchModel = new ProductSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -58,9 +101,12 @@ class ProductController extends Controller
      */
     public function actionView($id)
     {
+        $searchModel = new ShopAttributeValueSearch();
+        $dataProvider = $searchModel->searchById(Yii::$app->request->queryParams, $id);
         return $this->render('view', [
             'product_model' => $this->findModel($id),
-            'value_dataProvider' => ShopAttributeValue::getDP_ValuesByProductId($id),
+            'value_dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
         ]);
     }
 
@@ -115,13 +161,15 @@ class ProductController extends Controller
             $model_product->description = $post['description'];
             $model_product->save();
             $product_id = $model_product->id;
-            $attributes_values = $post['attributes_values'];
-            foreach ($attributes_values as $elem) {
-                $model_value = new ShopAttributeValue();
-                $model_value->product_id = $product_id;
-                $model_value->attribute_id = $elem['attribute'];
-                $model_value->value = $elem['value'];
-                $model_value->save();
+            if (isset($post['attributes_values'])) {
+                $attributes_values = $post['attributes_values'];
+                foreach ($attributes_values as $elem) {
+                    $model_value = new ShopAttributeValue();
+                    $model_value->product_id = $product_id;
+                    $model_value->attribute_id = $elem['attribute'];
+                    $model_value->value = $elem['value'];
+                    $model_value->save();
+                }
             }
             return $this->redirect(['view', 'id' => $model_product->id]);
         }
@@ -131,19 +179,16 @@ class ProductController extends Controller
             return json_encode($attributes_values);
         }
 
-        $attributes = ShopAttribute::getModelsAttributes();
-        $attributes_values = ShopAttributeValue::getDP_ValuesByProductId($id);
+        $searchModel = new ShopAttributeValueSearch();
+        $dataProvider = $searchModel->searchById(Yii::$app->request->queryParams, $id);
 
-        $cookies = Yii::$app->response->cookies;
-        $cookies->add(new \yii\web\Cookie([
-            'name' => 'attributes_values',
-            'value' => json_encode($attributes_values),
-        ]));
+        $attributes = $model_product->getFreeAttributes();
 
         return $this->render('update', [
             'model_product' => $model_product,
             'attributes' => $attributes,
-            'attributes_values' => $attributes_values,
+            'attributes_values' => $dataProvider,
+            'searchModel' => $searchModel,
         ]);
     }
 

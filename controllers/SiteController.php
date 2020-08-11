@@ -8,12 +8,63 @@ use app\models\Login;
 use app\models\Todo;
 use app\models\Login_vk;
 use app\models\Menu;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\Html;
 use yii\helpers\VarDumper;
 use yii\web\Controller;
 
 class SiteController extends Controller
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['toDo'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['activation'],
+                        'roles' => ['toDo'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['activation'],
+                        'roles' => ['toDo'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'roles' => ['toDo'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'roles' => ['toDo'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update-value'],
+                        'roles' => ['toDo'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete-value'],
+                        'roles' => ['toDo'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         return $this->render('index');

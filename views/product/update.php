@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model_product app\models\Product */
 /* @var $attributes */
-/* @var $attributes_values array */
-
+/* @var $attributes_values \yii\data\ActiveDataProvider */
+/* @var $searchModel \app\models\ShopAttributeValueSearch */
 
 $this->title = 'Update Product: ' . $model_product->name;
 $this->params['breadcrumbs'][] = ['label' => 'Products', 'url' => ['index']];
@@ -22,6 +22,7 @@ $this->params['breadcrumbs'][] = 'Update';
         'attributes' => $attributes,
         'attributes_values' => $attributes_values,
         'breadcrumbs' => $this->params['breadcrumbs'],
+        "searchModel" =>$searchModel,
     ]) ?>
 
 </div>

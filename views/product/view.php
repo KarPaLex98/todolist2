@@ -9,6 +9,7 @@ use yii\widgets\ListView;
 /* @var $this yii\web\View */
 /* @var $product_model app\models\Product */
 /* @var $value_dataProvider yii\data\ActiveDataProvider */
+/* @var $searchModel \app\models\ShopAttributeValueSearch */
 
 $this->title = $product_model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Products', 'url' => ['index']];
@@ -47,19 +48,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $value_dataProvider,
+        'filterModel' => $searchModel,
+
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
             'product_id',
-            [
-                'attribute' => 'attribute',
-                'label' => 'Attribute',
-//                    'filter' => ShopAttribute::find()->select('title')->indexBy('title')->column(),
-                'value' => function ($model) {
-                    return ShopAttribute::findOne($model->attribute_id)->title;
-                },
-            ],
+            'attribute_title',
+//            [
+//                'attribute' => 'shop_attribute',
+//                'label' => 'Shop Attribute',
+////                    'filter' => ShopAttribute::find()->select('title')->indexBy('title')->column(),
+//                'value' => function ($model) {
+////                    return ShopAttribute::findOne($model->attribute_id)->title;
+//                },
+//            ],
             'value',
         ],
     ]) ?>

@@ -14,10 +14,14 @@ use yii\helpers\VarDumper;
  * @property int $attribute_id
  * @property string $value
  *
- * @property ShopAttribute $attribute0
+ * @property ShopAttribute $shop_attribute
  */
 class ShopAttributeValue extends \yii\db\ActiveRecord
 {
+    /**
+     * @var mixed|null
+     */
+
     /**
      * {@inheritdoc}
      */
@@ -26,12 +30,23 @@ class ShopAttributeValue extends \yii\db\ActiveRecord
         return '{{%shop_attribute_value}}';
     }
 
+    /* Связь с моделью ShopAttribute*/
+    public function getShop_attribute()
+    {
+        return $this->hasOne(ShopAttribute::className(), ['id' => 'attribute_id']);
+    }
+
+    public function getAttribute_title() {
+        return $this->shop_attribute->title;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
+            [['attribute_title'], 'safe'],
             [['product_id', 'attribute_id', 'value'], 'required'],
             [['product_id', 'attribute_id'], 'integer'],
             [['value'], 'string', 'max' => 255],
@@ -49,7 +64,17 @@ class ShopAttributeValue extends \yii\db\ActiveRecord
             'product_id' => 'Product ID',
             'attribute_id' => 'Attribute ID',
             'value' => 'Value',
+            'attribute_title' => 'Attribute Title',
         ];
+    }
+
+    public function getFreeAttributes(){
+        $attributes_values = [];
+        $raw_data = self::find()->andWhere(['=', 'product_id', $id])->all();
+        foreach ($raw_data as $element) {
+            $attributes_values[] = ["attribute" => $element->attribute_id, "value" => $element->value];
+        }
+        return $attributes_values;
     }
 
     public static function getDP_ValuesByProductId($id)
@@ -69,11 +94,4 @@ class ShopAttributeValue extends \yii\db\ActiveRecord
         return $attributes_values;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAttribute0()
-    {
-        return $this->hasOne(ShopAttribute::className(), ['id' => 'attribute_id']);
-    }
 }

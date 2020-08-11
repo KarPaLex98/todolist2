@@ -7,11 +7,7 @@ use yii\helpers\Html;
 /* @var $product_name string */
 /* @var $product_id integer */
 
-\yii\helpers\VarDumper::dump($product_id, 10,true);
-
-\yii\helpers\VarDumper::dump($product_name, 10,true);
-
-$this->title = 'Update Shop Attribute Value: ' . $model->id;
+$this->title = 'Update Shop Attribute Value: ' . $model->attribute_title;
 
 $this->params['breadcrumbs'][] = ['label' => 'Products', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $product_name, 'url' => ['view', 'id' => $product_id]];

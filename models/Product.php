@@ -21,6 +21,7 @@ class Product extends \yii\db\ActiveRecord
         return '{{%product}}';
     }
 
+
     /**
      * {@inheritdoc}
      */
@@ -42,5 +43,27 @@ class Product extends \yii\db\ActiveRecord
             'name' => 'Name',
             'description' => 'Description',
         ];
+    }
+
+    public function getFreeAttributes(){
+        $attributes_values = [];
+        $raw_data = ShopAttributeValue::find()->andWhere(['=', 'product_id', $this->id])->all();
+        $attr_i = [];
+
+        foreach ($raw_data as $element) {
+            $attr_i[] = $element->attribute_id;
+        }
+
+        $raw_data = ShopAttribute::find()->where(['not in', 'id', $attr_i])->all();
+
+        $attributes = [];
+        $ids = [];
+        $titles = [];
+        foreach ($raw_data as $attribute) {
+            $ids[] = $attribute->id;
+            $titles[] = $attribute->title;
+        }
+        $attributes = array_combine($ids, $titles);
+        return $attributes;
     }
 }

@@ -15,6 +15,7 @@ use unclead\multipleinput\MultipleInput;
 /* @var $attributes array */
 /* @var $attributes_values array */
 /* @var $breadcrumbs array */
+/* @var $searchModel \app\models\ShopAttributeValueSearch */
 
 ?>
 
@@ -26,34 +27,10 @@ use unclead\multipleinput\MultipleInput;
 
     <?= $form->field($model_product, 'description')->textInput(['maxlength' => true]) ?>
 
-    <?php if (is_null($attributes_values)):
-        ?>
-        <?= $form->field($model_product, 'attributes_values')->widget(MultipleInput::className(), [
-        'max' => count($attributes),
-//        'max' => 10,
-        'min' => 0,
-        'allowEmptyList' => false,
-        'enableGuessTitle' => true,
-        'addButtonPosition' => MultipleInput::POS_HEADER, // show add button in the header
-        'columns' => [
-            [
-                'name' => 'attribute',
-                'type' => 'dropDownList',
-                'title' => 'Attribute',
-                'defaultValue' => 1,
-                'items' => $attributes,
-            ],
-            [
-                'name' => 'value',
-                'title' => 'Value',
-                'enableError' => true,
-            ]
-        ]])
-        ->label(false) ?>
-    <?php else: ?>
+    <?php if (is_null($attributes_values)): ?>
+
         <?= $form->field($model_product, 'attributes_values')->widget(MultipleInput::className(), [
             'max' => count($attributes),
-//            'max' => 10,
             'min' => 0,
             'allowEmptyList' => false,
             'enableGuessTitle' => true,
@@ -71,25 +48,45 @@ use unclead\multipleinput\MultipleInput;
                     'title' => 'Value',
                     'enableError' => true,
                 ]
-            ],
-        ])
+            ]])
             ->label(false) ?>
+
+    <?php else: ?>
+        <?php if (count($attributes) !== 0): ?>
+            <?= $form->field($model_product, 'attributes_values')->widget(MultipleInput::className(), [
+                'max' => count($attributes),
+                'min' => 0,
+                'allowEmptyList' => false,
+                'enableGuessTitle' => true,
+                'addButtonPosition' => MultipleInput::POS_HEADER, // show add button in the header
+                'columns' => [
+                    [
+                        'name' => 'attribute',
+                        'type' => 'dropDownList',
+                        'title' => 'Attribute',
+                        'defaultValue' => 1,
+                        'items' => $attributes,
+                    ],
+                    [
+                        'name' => 'value',
+                        'title' => 'Value',
+                        'enableError' => true,
+                    ]
+                ],
+            ])
+                ->label(false) ?>
+        <?php endif; ?>
 
         <?= GridView::widget([
             'dataProvider' => $attributes_values,
+            'filterModel' => $searchModel,
+
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
 
                 'id',
                 'product_id',
-                [
-                    'attribute' => 'attribute',
-                    'label' => 'Attribute',
-                    'filter' => ShopAttribute::find()->select('title, id')->indexBy('title')->column(),
-                    'value' => function ($model) {
-                        return ShopAttribute::findOne($model->attribute_id)->title;
-                    },
-                ],
+                'attribute_title',
                 'value',
 
                 [
