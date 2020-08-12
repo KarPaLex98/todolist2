@@ -10,48 +10,47 @@ class RbacController extends Controller
     public function actionInit()
     {
         $auth = Yii::$app->authManager;
-
         $auth->removeAll();
 
-        $nestedSets = $auth->createPermission('nestedSets');
-        $nestedSets->description = 'actions with NestedSets';
-        $auth->add($nestedSets);
+        $addProduct = $auth->createPermission('addProduct');
+        $addProduct->description = 'Add new product';
+        $auth->add($addProduct);
 
-        $EAV = $auth->createPermission('EAV');
-        $EAV->description = 'Actions with EAV';
-        $auth->add($EAV);
+        $deleteProduct = $auth->createPermission('deleteProduct');
+        $deleteProduct->description = 'Delete product';
+        $auth->add($deleteProduct);
 
-        $toDO = $auth->createPermission('toDo');
-        $toDO->description = 'Actions with toDo list';
-        $auth->add($toDO);
+        $updateProduct = $auth->createPermission('updateProduct');
+        $updateProduct->description = 'Update product';
+        $auth->add($updateProduct);
+
+        $watchProducts = $auth->createPermission('watchProducts');
+        $watchProducts->description = 'Watch products';
+        $auth->add($watchProducts);
 
         $user = $auth->createRole('user');
         $auth->add($user);
-        $auth->addChild($user, $toDO);
-
-        $auth = Yii::$app->authManager;
-
-
-        $rule = new \app\rbac\AdvancedUserRule();
-        $auth->add($rule);
-
-
-        $watchAdminsPages = $auth->createPermission('watchAdminsPages');
-        $watchAdminsPages->description = "Watch admin's pages";
-        $watchAdminsPages->ruleName = $rule->name;
-        $auth->add($watchAdminsPages);
-
-        $auth->addChild($toDO, $watchAdminsPages);
-
-        $auth->addChild($user, $watchAdminsPages);
-
+        $auth->addChild($user, $watchProducts);
+        $auth->addChild($user, $addProduct);
 
         $admin = $auth->createRole('admin');
         $auth->add($admin);
-        $auth->addChild($admin, $EAV);
-        $auth->addChild($admin, $nestedSets);
+        $auth->addChild($admin, $addProduct);
+        $auth->addChild($admin, $deleteProduct);
+        $auth->addChild($admin, $updateProduct);
         $auth->addChild($admin, $user);
 
-        $auth->assign($user, 2);
+        $rule = new \app\rbac\AuthorRule();
+        $auth->add($rule);
+
+        $updateOwnProduct = $auth->createPermission('updateOwnProduct');
+        $updateOwnProduct->description = 'Update own product';
+        $updateOwnProduct->ruleName = $rule->name;
+        $auth->add($updateOwnProduct);
+
+        $auth->addChild($updateOwnProduct, $updateProduct);
+        $auth->addChild($user, $updateOwnProduct);
+
+        $auth->assign($user, 12);
     }
 }

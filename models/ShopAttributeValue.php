@@ -30,6 +30,11 @@ class ShopAttributeValue extends \yii\db\ActiveRecord
         return '{{%shop_attribute_value}}';
     }
 
+    public function getProduct()
+    {
+        return $this->hasOne(Product::className(), ['id' => 'product_id']);
+    }
+
     /* Связь с моделью ShopAttribute*/
     public function getShop_attribute()
     {

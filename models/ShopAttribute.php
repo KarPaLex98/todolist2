@@ -5,6 +5,7 @@ namespace app\models;
 
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%shop_attribute}}".
@@ -59,10 +60,11 @@ class ShopAttribute extends \yii\db\ActiveRecord
         $attributes = [];
         $ids = [];
         $titles = [];
-        foreach ($attributes_full as $attribute) {
+        foreach ($attributes_full as $key => $attribute) {
             $ids[] = $attribute->id;
             $titles[] = $attribute->title;
         }
+//        ArrayHelper::getColumn();
         $attributes = array_combine($ids, $titles);
         return $attributes;
     }

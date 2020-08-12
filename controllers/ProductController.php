@@ -35,21 +35,6 @@ class ProductController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'update-value', 'delete-value',],
-                        'roles' => ['admin'],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['index', 'view'],
-                        'roles' => ['watchAdminsPages'],
-                    ],
-                ],
-            ],
         ];
     }
 
@@ -59,13 +44,16 @@ class ProductController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ProductSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        if (\Yii::$app->user->can('watchProducts')) {
+            $searchModel = new ProductSearch();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+            return $this->render('index', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        }
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /**
@@ -76,13 +64,16 @@ class ProductController extends Controller
      */
     public function actionView($id)
     {
-        $searchModel = new ShopAttributeValueSearch();
-        $dataProvider = $searchModel->searchById(Yii::$app->request->queryParams, $id);
-        return $this->render('view', [
-            'product_model' => $this->findModel($id),
-            'value_dataProvider' => $dataProvider,
-            'searchModel' => $searchModel,
-        ]);
+        if (\Yii::$app->user->can('watchProducts')) {
+            $searchModel = new ShopAttributeValueSearch();
+            $dataProvider = $searchModel->searchById(Yii::$app->request->queryParams, $id);
+            return $this->render('view', [
+                'product_model' => $this->findModel($id),
+                'value_dataProvider' => $dataProvider,
+                'searchModel' => $searchModel,
+            ]);
+        }
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /**
@@ -92,34 +83,22 @@ class ProductController extends Controller
      */
     public function actionCreate()
     {
-        $model_product = new Product();
+        if (\Yii::$app->user->can('addProduct')) {
+            $model_product = new Product();
 
-        if (!empty($post = Yii::$app->request->post('Product'))) {
-            $model_product->name = $post['name'];
-            $model_product->description = $post['description'];
-            $model_product->save();
-            $product_id = Yii::$app->db->getLastInsertID();
-            if (isset($post['attributes_values']) && ($post['attributes_values']) !== '') {
-                $attributes_values = $post['attributes_values'];
-                foreach ($attributes_values as $elem) {
-                    $model_value = new ShopAttributeValue();
-                    $model_value->product_id = $product_id;
-                    $model_value->attribute_id = $elem['attribute'];
-                    $model_value->value = $elem['value'];
-                    $model_value->save();
-                }
+            if ($model_product->load(Yii::$app->request->post()) && $model_product->save()) {
+                return $this->redirect(['view', 'id' => $model_product->id]);
             }
-            return $this->redirect(['view', 'id' => $model_product->id]);
+
+            $attributes = ShopAttribute::getModelsAttributes();
+
+            return $this->render('create', [
+                'model_product' => $model_product,
+                'attributes' => $attributes,
+                '$attributes_values' => null,
+            ]);
         }
-
-        $model_value = new ShopAttributeValue();
-        $attributes = ShopAttribute::getModelsAttributes();
-
-        return $this->render('create', [
-            'model_product' => $model_product,
-            'attributes' => $attributes,
-            '$attributes_values' => null,
-        ]);
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /**
@@ -132,79 +111,27 @@ class ProductController extends Controller
     public function actionUpdate($id, $count_val = 0)
     {
         $model_product = $this->findModel($id);
+        if (\Yii::$app->user->can('updateProduct', ['Product' => $model_product])) {
+            $model_product = $this->findModel($id);
+            if (\Yii::$app->user->can('updateOwnProduct', ['Product' => $model_product])) {
 
-        if (!empty($post = Yii::$app->request->post('Product'))) {
-            $model_product->name = $post['name'];
-            $model_product->description = $post['description'];
-            $model_product->save();
-            $product_id = $model_product->id;
-            if (isset($post['attributes_values']) && ($post['attributes_values']) !== '') {
-                $attributes_values = $post['attributes_values'];
-                foreach ($attributes_values as $elem) {
-                    $model_value = new ShopAttributeValue();
-                    $model_value->product_id = $product_id;
-                    $model_value->attribute_id = $elem['attribute'];
-                    $model_value->value = $elem['value'];
-                    $model_value->save();
+                if ($model_product->load(Yii::$app->request->post()) && $model_product->save()) {
+                    return $this->redirect(['view', 'id' => $model_product->id]);
                 }
+
+                $searchModel = new ShopAttributeValueSearch();
+                $dataProvider = $searchModel->searchById(Yii::$app->request->queryParams, $id);
+                $attributes = ShopAttribute::getModelsAttributes();
+
+                return $this->render('update', [
+                    'model_product' => $model_product,
+                    'attributes' => $attributes,
+                    'attributes_values' => $dataProvider,
+                    'searchModel' => $searchModel,
+                ]);
             }
-            return $this->redirect(['view', 'id' => $model_product->id]);
         }
-
-        if (!empty($post = Yii::$app->request->post('id'))) {
-            $attributes_values = ShopAttributeValue::get_ValuesByProductId($post);
-            return json_encode($attributes_values);
-        }
-
-        $searchModel = new ShopAttributeValueSearch();
-        $dataProvider = $searchModel->searchById(Yii::$app->request->queryParams, $id);
-
-        $attributes = $model_product->getFreeAttributes();
-
-        return $this->render('update', [
-            'model_product' => $model_product,
-            'attributes' => $attributes,
-            'attributes_values' => $dataProvider,
-            'searchModel' => $searchModel,
-        ]);
-    }
-
-    /**
-     * Updates an existing ShopAttributeValue model.
-     * If update is successful, the browser will be redirected to the 'update' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdateValue($product_id, $value_id)
-    {
-        $model = ShopAttributeValue::findOne($value_id);
-
-        $product = Product::findOne($product_id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['update', 'id' => $product->id]);
-        }
-
-        return $this->render('shop-attribute-value/update', [
-            'model' => $model,
-            'product_id' => $product->id,
-            'product_name' => $product->name,
-        ]);
-    }
-
-    /**
-     * Deletes an existing ShopAttributeValue model.
-     * If deletion is successful, the browser will be redirected to the 'update' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDeleteValue($product_id, $value_id)
-    {
-        ShopAttributeValue::findOne($value_id)->delete();
-
-        return $this->redirect(['update', 'id' => $product_id]);
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /**
@@ -216,9 +143,12 @@ class ProductController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        if (\Yii::$app->user->can('deleteProduct')) {
+            $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+            return $this->redirect(['index']);
+        }
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /**

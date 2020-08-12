@@ -11,6 +11,7 @@ use app\models\Product;
  */
 class ProductSearch extends Product
 {
+
     /**
      * {@inheritdoc}
      */

@@ -107,7 +107,7 @@ class ShopAttributeController extends Controller
     {
         $this->findModel($id)->delete();
 
-        ShopAttributeValue::deleteAll('attribute_id = :attribute_id', [':attribute_id' => $id]);
+        ShopAttributeValue::deleteAll(['attribute_id' => $id]);
 
         return $this->redirect(['index']);
     }
